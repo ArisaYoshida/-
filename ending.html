@@ -382,6 +382,68 @@
   }
   .deco-top { top: 20px; left: 20px; }
   .deco-bottom { bottom: 20px; right: 20px; text-align: right; }
+
+  /* ===== スマホ対応 ===== */
+  @media (max-width: 480px) {
+    #story {
+      padding: 30px 12px 60px;
+    }
+    .intro-title {
+      font-size: 2em;
+    }
+    .intro-sub {
+      font-size: 0.7em;
+      letter-spacing: 0.3em;
+      margin-bottom: 40px;
+    }
+    #startBtn {
+      padding: 14px 36px;
+      font-size: 1em;
+      min-height: 48px;
+    }
+    .scene {
+      padding: 25px 18px;
+      margin-bottom: 50px;
+    }
+    .scene-label {
+      font-size: 0.65em;
+    }
+    .scene-text {
+      font-size: 0.85em;
+      line-height: 2.0;
+    }
+    .unlock-text {
+      font-size: 1.1em;
+    }
+    .lock-icon {
+      font-size: 2em;
+    }
+    .gift-message {
+      font-size: 0.8em;
+    }
+    .gift-link {
+      font-size: 0.8em;
+      padding: 10px 18px;
+    }
+    .divider {
+      margin-bottom: 50px;
+    }
+    .deco {
+      display: none;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .intro-title {
+      font-size: 1.7em;
+    }
+    .scene {
+      padding: 20px 14px;
+    }
+    .scene-text {
+      font-size: 0.8em;
+    }
+  }
 </style>
 </head>
 <body>
