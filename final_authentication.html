@@ -388,6 +388,21 @@
     0% { opacity: 0.6; }
     100% { opacity: 0; }
   }
+
+  .hint {
+    font-size: 0.8em;
+    color: rgba(0, 200, 255, 0.5);
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: left;
+    letter-spacing: 0.1em;
+    animation: hintPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes hintPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; text-shadow: 0 0 8px rgba(0, 200, 255, 0.3); }
+  }
 </style>
 </head>
 <body>
@@ -424,6 +439,8 @@
       &gt; すべての謎が導く、たったひとつの答え。<span class="cursor-blink">█</span>
     </div>
 
+    
+    <div class="hint">&gt; HINT: 大文字アルファベット７文字</div>
     <div class="input-row">
       <span class="prefix">&gt;_</span>
       <input type="text" id="codeInput" placeholder="CODE" autocomplete="off" spellcheck="false">
@@ -439,7 +456,7 @@
 <script>
   // ===== 設定 =====
   const CORRECT_ANSWER = "HISTORY";
-  const SUCCESS_URL = "https://example.com/PLACEHOLDER"; // ← あとでURLを差し替えてください
+  const SUCCESS_URL = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=XRlLgruDl0yKhXxBa5UJbkr2zDxd_yVBrdUFQI3g_mtUMDhKMURPQTM4WEVIOFJBN1E0SzVWS0xGNS4u"; // ← あとでURLを差し替えてください
   // ================
 
   let attempts = 0;
