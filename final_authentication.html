@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最終認証</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    color: #00ff88;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* スキャンライン */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 136, 0.03) 0px,
+      rgba(0, 255, 136, 0.03) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanFlicker 0.1s infinite;
+  }
+
+  /* CRTビネット */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  @keyframes scanFlicker {
+    0% { opacity: 0.9; }
+    50% { opacity: 1; }
+    100% { opacity: 0.9; }
+  }
+
+  /* 背景パーティクル */
+  .particles {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    color: rgba(0, 255, 136, 0.15);
+    font-size: 14px;
+    animation: fall linear infinite;
+    font-family: 'Share Tech Mono', monospace;
+    pointer-events: none;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 100;
+    text-align: center;
+    padding: 40px;
+    max-width: 560px;
+    width: 90%;
+  }
+
+  /* グリッチタイトル */
+  .title-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .title {
+    font-size: 2.6em;
+    letter-spacing: 0.15em;
+    color: #00ff88;
+    text-shadow:
+      0 0 10px #00ff88,
+      0 0 20px #00ff88,
+      0 0 40px #00cc66,
+      0 0 80px #00cc66;
+    animation: glowPulse 2s ease-in-out infinite;
+    position: relative;
+  }
+
+  .title::before,
+  .title::after {
+    content: '最終認証';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
+
+  .title::before {
+    color: #ff0040;
+    animation: glitch1 3s infinite;
+    clip-path: inset(0 0 60% 0);
+  }
+
+  .title::after {
+    color: #00c8ff;
+    animation: glitch2 3s infinite;
+    clip-path: inset(60% 0 0 0);
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
+
+  @keyframes glitch1 {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(-3px, 1px); }
+    94% { transform: translate(3px, -1px); }
+    96% { transform: translate(-2px, 2px); }
+    98% { transform: translate(2px, -2px); }
+  }
+
+  @keyframes glitch2 {
+    0%, 88%, 100% { transform: translate(0); }
+    90% { transform: translate(3px, -1px); }
+    93% { transform: translate(-3px, 1px); }
+    95% { transform: translate(2px, 2px); }
+    97% { transform: translate(-2px, -1px); }
+  }
+
+  .subtitle {
+    font-size: 0.85em;
+    color: rgba(0, 255, 136, 0.4);
+    letter-spacing: 0.5em;
+    margin-bottom: 40px;
+    animation: blink 4s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+
+  /* 枠線ボックス */
+  .auth-box {
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    padding: 40px 30px;
+    position: relative;
+    background: rgba(0, 20, 10, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+  }
+
+  .auth-box::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    border: 1px solid rgba(0, 255, 136, 0.1);
+    animation: borderGlow 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes borderGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(0,255,136,0.1); }
+    50% { box-shadow: 0 0 20px rgba(0,255,136,0.2), inset 0 0 20px rgba(0,255,136,0.05); }
+  }
+
+  .corner {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-color: #00ff88;
+    border-style: solid;
+    pointer-events: none;
+  }
+  .corner.tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+  .corner.tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+  .corner.bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+  .corner.br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+  .prompt {
+    font-size: 0.95em;
+    color: rgba(0, 255, 136, 0.7);
+    margin-bottom: 25px;
+    text-align: left;
+    line-height: 1.8;
+  }
+
+  .prompt .cursor-blink {
+    animation: cursorBlink 1s step-end infinite;
+  }
+
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .input-row {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 100;
+  }
+
+  .prefix {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-right: none;
+    padding: 12px 14px;
+    color: #00ff88;
+    font-family: inherit;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+  }
+
+  #codeInput {
+    flex: 1;
+    background: rgba(0, 10, 5, 0.8);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-left: none;
+    padding: 12px 16px;
+    color: #00ff88;
+    font-family: inherit;
+    font-size: 1.1em;
+    letter-spacing: 0.2em;
+    outline: none;
+    caret-color: #00ff88;
+    transition: all 0.3s;
+    position: relative;
+    z-index: 100;
+  }
+
+  #codeInput:focus {
+    border-color: #00ff88;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+  }
+
+  #codeInput::placeholder {
+    color: rgba(0, 255, 136, 0.2);
+    letter-spacing: 0.3em;
+  }
+
+  #submitBtn {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    font-family: inherit;
+    font-size: 1.1em;
+    letter-spacing: 0.3em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    z-index: 100;
+  }
+
+  #submitBtn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,255,136,0.15), transparent);
+    transition: left 0.5s;
+  }
+
+  #submitBtn:hover::before {
+    left: 100%;
+  }
+
+  #submitBtn:hover {
+    background: rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+    text-shadow: 0 0 10px #00ff88;
+  }
+
+  #submitBtn:active {
+    transform: scale(0.98);
+  }
+
+  /* 結果表示 */
+  #result {
+    margin-top: 25px;
+    min-height: 50px;
+    font-size: 1em;
+    line-height: 1.8;
+  }
+
+  .wrong {
+    color: #ff0040 !important;
+    text-shadow: 0 0 10px #ff0040, 0 0 20px #ff0040;
+    animation: shakeIt 0.5s;
+  }
+
+  @keyframes shakeIt {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-8px); }
+    20% { transform: translateX(8px); }
+    30% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    50% { transform: translateX(-4px); }
+    60% { transform: translateX(4px); }
+    70% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+  }
+
+  .correct {
+    color: #00ff88;
+    animation: successGlow 1s ease-in-out;
+  }
+
+  @keyframes successGlow {
+    0% { opacity: 0; transform: scale(0.8); }
+    50% { text-shadow: 0 0 30px #00ff88, 0 0 60px #00ff88; }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .success-url {
+    display: inline-block;
+    margin-top: 10px;
+    color: #00c8ff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0, 200, 255, 0.3);
+    padding-bottom: 2px;
+    transition: all 0.3s;
+    word-break: break-all;
+  }
+
+  .success-url:hover {
+    color: #fff;
+    text-shadow: 0 0 15px #00c8ff;
+    border-color: #00c8ff;
+  }
+
+  /* 装飾テキスト */
+  .deco {
+    position: fixed;
+    color: rgba(0, 255, 136, 0.06);
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .deco-top { top: 20px; left: 20px; }
+  .deco-bottom { bottom: 20px; right: 20px; text-align: right; }
+
+  .attempt-counter {
+    font-size: 0.75em;
+    color: rgba(0, 255, 136, 0.25);
+    margin-top: 15px;
+  }
+
+  /* 成功時のオーバーレイフラッシュ */
+  .flash-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #00ff88;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    animation: flashAnim 0.6s ease-out forwards;
+  }
+
+  @keyframes flashAnim {
+    0% { opacity: 0.6; }
+    100% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 背景パーティクル -->
+<div class="particles" id="particles"></div>
+
+<!-- 装飾テキスト -->
+<div class="deco deco-top">
+  SYS.AUTH.FINAL // ENCRYPTED<br>
+  PROTOCOL: ENIGMA-7<br>
+  STATUS: AWAITING INPUT...
+</div>
+<div class="deco deco-bottom">
+  CIPHER MODULE v3.14<br>
+  SECURITY LEVEL: ████████<br>
+  [CLASSIFIED]
+</div>
+
+<div class="container">
+  <div class="title-wrapper">
+    <h1 class="title">最終認証</h1>
+  </div>
+  <div class="subtitle">― FINAL AUTHENTICATION ―</div>
+
+  <div class="auth-box">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="prompt">
+      &gt; SYSTEM: 最後の暗号を入力せよ。<br>
+      &gt; すべての謎が導く、たったひとつの答え。<span class="cursor-blink">█</span>
+    </div>
+
+    <div class="input-row">
+      <span class="prefix">&gt;_</span>
+      <input type="text" id="codeInput" placeholder="CODE" autocomplete="off" spellcheck="false">
+    </div>
+
+    <button id="submitBtn" onclick="authenticate()">確 定</button>
+
+    <div id="result"></div>
+    <div class="attempt-counter" id="attemptCounter"></div>
+  </div>
+</div>
+
+<script>
+  // ===== 設定 =====
+  const CORRECT_ANSWER = "HISTORY";
+  const SUCCESS_URL = "https://example.com/PLACEHOLDER"; // ← あとでURLを差し替えてください
+  // ================
+
+  let attempts = 0;
+
+  function authenticate() {
+    const input = document.getElementById('codeInput').value.trim();
+    const result = document.getElementById('result');
+    const counter = document.getElementById('attemptCounter');
+    attempts++;
+
+    if (input === '') {
+      result.innerHTML = '<span class="wrong">⚠ コードが入力されていません</span>';
+      return;
+    }
+
+    if (input === CORRECT_ANSWER) {
+      // フラッシュ演出
+      const flash = document.createElement('div');
+      flash.className = 'flash-overlay';
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 700);
+
+      result.innerHTML = '';
+      setTimeout(() => {
+        result.innerHTML =
+          '<span class="correct">' +
+          '✦ 認証成功 ― ACCESS GRANTED ✦<br><br>' +
+          '<a href="' + SUCCESS_URL + '" target="_blank" class="success-url">' +
+          SUCCESS_URL + '</a>' +
+          '</span>';
+      }, 400);
+
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('submitBtn').style.opacity = '0.3';
+      counter.textContent = '';
+    } else {
+      result.innerHTML = '<span class="wrong">✖ 不正解 ― ACCESS DENIED</span>';
+      counter.textContent = '試行回数: ' + attempts;
+
+      // 入力欄もシェイク
+      const inputEl = document.getElementById('codeInput');
+      inputEl.style.borderColor = '#ff0040';
+      inputEl.style.boxShadow = '0 0 15px rgba(255,0,64,0.3)';
+      setTimeout(() => {
+        inputEl.style.borderColor = 'rgba(0,255,136,0.3)';
+        inputEl.style.boxShadow = 'none';
+      }, 600);
+    }
+  }
+
+  // Enterキーで確定
+  document.getElementById('codeInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') authenticate();
+  });
+
+  // 背景パーティクル生成
+  const symbols = ['0','1','?','#','$','%','&','@','※','◆','▲','■','●','×','†','Ω','Σ','∞','∴','⌘'];
+  const particlesEl = document.getElementById('particles');
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('span');
+    p.className = 'particle';
+    p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (6 + Math.random() * 12) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.fontSize = (10 + Math.random() * 14) + 'px';
+    particlesEl.appendChild(p);
+  }
+</script>
+</body>
+</html>
