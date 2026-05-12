@@ -21,7 +21,6 @@
     position: relative;
   }
 
-  /* スキャンライン */
   body::before {
     content: '';
     position: fixed;
@@ -38,7 +37,6 @@
     animation: scanFlicker 0.1s infinite;
   }
 
-  /* CRTビネット */
   body::after {
     content: '';
     position: fixed;
@@ -54,7 +52,6 @@
     100% { opacity: 0.9; }
   }
 
-  /* 背景パーティクル */
   .particles {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -88,7 +85,6 @@
     width: 90%;
   }
 
-  /* グリッチタイトル */
   .title-wrapper {
     position: relative;
     margin-bottom: 10px;
@@ -160,7 +156,6 @@
     50% { opacity: 0.8; }
   }
 
-  /* 枠線ボックス */
   .auth-box {
     border: 1px solid rgba(0, 255, 136, 0.3);
     padding: 40px 30px;
@@ -212,6 +207,21 @@
   @keyframes cursorBlink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
+  }
+
+  .hint {
+    font-size: 0.8em;
+    color: rgba(0, 200, 255, 0.5);
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: left;
+    letter-spacing: 0.1em;
+    animation: hintPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes hintPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; text-shadow: 0 0 8px rgba(0, 200, 255, 0.3); }
   }
 
   .input-row {
@@ -286,9 +296,7 @@
     transition: left 0.5s;
   }
 
-  #submitBtn:hover::before {
-    left: 100%;
-  }
+  #submitBtn:hover::before { left: 100%; }
 
   #submitBtn:hover {
     background: rgba(0, 255, 136, 0.1);
@@ -300,7 +308,6 @@
     transform: scale(0.98);
   }
 
-  /* 結果表示 */
   #result {
     margin-top: 25px;
     min-height: 50px;
@@ -337,24 +344,6 @@
     100% { opacity: 1; transform: scale(1); }
   }
 
-  .success-url {
-    display: inline-block;
-    margin-top: 10px;
-    color: #00c8ff;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(0, 200, 255, 0.3);
-    padding-bottom: 2px;
-    transition: all 0.3s;
-    word-break: break-all;
-  }
-
-  .success-url:hover {
-    color: #fff;
-    text-shadow: 0 0 15px #00c8ff;
-    border-color: #00c8ff;
-  }
-
-  /* 装飾テキスト */
   .deco {
     position: fixed;
     color: rgba(0, 255, 136, 0.06);
@@ -373,7 +362,6 @@
     margin-top: 15px;
   }
 
-  /* 成功時のオーバーレイフラッシュ */
   .flash-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -389,28 +377,65 @@
     100% { opacity: 0; }
   }
 
-  .hint {
-    font-size: 0.8em;
-    color: rgba(0, 200, 255, 0.5);
-    margin-top: 15px;
-    margin-bottom: 5px;
-    text-align: left;
-    letter-spacing: 0.1em;
-    animation: hintPulse 3s ease-in-out infinite;
+  /* ===== スマホ対応 ===== */
+  @media (max-width: 480px) {
+    .container {
+      padding: 15px;
+      width: 95%;
+    }
+    .title {
+      font-size: 1.8em;
+    }
+    .subtitle {
+      font-size: 0.7em;
+      letter-spacing: 0.3em;
+      margin-bottom: 25px;
+    }
+    .auth-box {
+      padding: 25px 18px;
+    }
+    .prompt {
+      font-size: 0.82em;
+      line-height: 1.7;
+    }
+    .hint {
+      font-size: 0.72em;
+    }
+    #codeInput {
+      font-size: 16px;
+      padding: 10px 12px;
+    }
+    .prefix {
+      padding: 10px 10px;
+      font-size: 0.9em;
+    }
+    #submitBtn {
+      padding: 12px;
+      font-size: 1em;
+      min-height: 48px;
+    }
+    #result {
+      font-size: 0.9em;
+    }
+    .deco {
+      display: none;
+    }
   }
 
-  @keyframes hintPulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.8; text-shadow: 0 0 8px rgba(0, 200, 255, 0.3); }
+  @media (max-width: 360px) {
+    .title {
+      font-size: 1.5em;
+    }
+    .auth-box {
+      padding: 20px 14px;
+    }
   }
 </style>
 </head>
 <body>
 
-<!-- 背景パーティクル -->
 <div class="particles" id="particles"></div>
 
-<!-- 装飾テキスト -->
 <div class="deco deco-top">
   SYS.AUTH.FINAL // ENCRYPTED<br>
   PROTOCOL: ENIGMA-7<br>
@@ -439,8 +464,8 @@
       &gt; すべての謎が導く、たったひとつの答え。<span class="cursor-blink">█</span>
     </div>
 
-    
     <div class="hint">&gt; HINT: 大文字アルファベット７文字</div>
+
     <div class="input-row">
       <span class="prefix">&gt;_</span>
       <input type="text" id="codeInput" placeholder="CODE" autocomplete="off" spellcheck="false">
@@ -454,10 +479,8 @@
 </div>
 
 <script>
-  // ===== 設定 =====
   const CORRECT_ANSWER = "HISTORY";
-  const SUCCESS_URL = "https://arisayoshida.github.io/-/final_authentication.html"; // ← あとでURLを差し替えてください
-  // ================
+  const SUCCESS_URL = "https://arisayoshida.github.io/-/ending.html";
 
   let attempts = 0;
 
@@ -481,22 +504,22 @@
 
       result.innerHTML = '';
       setTimeout(() => {
-        result.innerHTML =
-          '<span class="correct">' +
-          '✦ 認証成功 ― ACCESS GRANTED ✦<br><br>' +
-          '<a href="' + SUCCESS_URL + '" target="_blank" class="success-url">' +
-          SUCCESS_URL + '</a>' +
-          '</span>';
+        result.innerHTML = '<span class="correct">✦ 認証成功 ― ACCESS GRANTED ✦</span>';
       }, 400);
 
       document.getElementById('submitBtn').disabled = true;
       document.getElementById('submitBtn').style.opacity = '0.3';
       counter.textContent = '';
+
+      // 1.5秒後に自動でエンディングページへ遷移
+      setTimeout(() => {
+        window.location.href = SUCCESS_URL;
+      }, 1500);
+
     } else {
       result.innerHTML = '<span class="wrong">✖ 不正解 ― ACCESS DENIED</span>';
       counter.textContent = '試行回数: ' + attempts;
 
-      // 入力欄もシェイク
       const inputEl = document.getElementById('codeInput');
       inputEl.style.borderColor = '#ff0040';
       inputEl.style.boxShadow = '0 0 15px rgba(255,0,64,0.3)';
@@ -507,12 +530,10 @@
     }
   }
 
-  // Enterキーで確定
   document.getElementById('codeInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') authenticate();
   });
 
-  // 背景パーティクル生成
   const symbols = ['0','1','?','#','$','%','&','@','※','◆','▲','■','●','×','†','Ω','Σ','∞','∴','⌘'];
   const particlesEl = document.getElementById('particles');
   for (let i = 0; i < 40; i++) {
