@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENDING</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    color: #00ff88;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* スキャンライン */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 136, 0.03) 0px,
+      rgba(0, 255, 136, 0.03) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanFlicker 0.1s infinite;
+  }
+
+  /* CRTビネット */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  @keyframes scanFlicker {
+    0% { opacity: 0.9; }
+    50% { opacity: 1; }
+    100% { opacity: 0.9; }
+  }
+
+  /* 背景パーティクル */
+  .particles {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    color: rgba(0, 255, 136, 0.12);
+    font-size: 14px;
+    animation: fall linear infinite;
+    font-family: 'Share Tech Mono', monospace;
+    pointer-events: none;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ===== イントロ画面 ===== */
+  #intro {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #0a0a0a;
+    transition: opacity 1.5s ease;
+  }
+
+  #intro.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .intro-title {
+    font-size: 3em;
+    letter-spacing: 0.2em;
+    color: #00ff88;
+    text-shadow:
+      0 0 10px #00ff88,
+      0 0 20px #00ff88,
+      0 0 40px #00cc66,
+      0 0 80px #00cc66;
+    margin-bottom: 20px;
+    position: relative;
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  .intro-title::before,
+  .intro-title::after {
+    content: 'ENDING';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
+
+  .intro-title::before {
+    color: #ff0040;
+    animation: glitch1 3s infinite;
+    clip-path: inset(0 0 60% 0);
+  }
+
+  .intro-title::after {
+    color: #00c8ff;
+    animation: glitch2 3s infinite;
+    clip-path: inset(60% 0 0 0);
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
+
+  @keyframes glitch1 {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(-3px, 1px); }
+    94% { transform: translate(3px, -1px); }
+    96% { transform: translate(-2px, 2px); }
+    98% { transform: translate(2px, -2px); }
+  }
+
+  @keyframes glitch2 {
+    0%, 88%, 100% { transform: translate(0); }
+    90% { transform: translate(3px, -1px); }
+    93% { transform: translate(-3px, 1px); }
+    95% { transform: translate(2px, 2px); }
+    97% { transform: translate(-2px, -1px); }
+  }
+
+  .intro-sub {
+    font-size: 0.85em;
+    color: rgba(0, 255, 136, 0.4);
+    letter-spacing: 0.5em;
+    margin-bottom: 60px;
+  }
+
+  #startBtn {
+    padding: 16px 50px;
+    background: transparent;
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    font-family: inherit;
+    font-size: 1.1em;
+    letter-spacing: 0.3em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    z-index: 100;
+    animation: btnPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes btnPulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(0,255,136,0.2); }
+    50% { box-shadow: 0 0 20px rgba(0,255,136,0.4); }
+  }
+
+  #startBtn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,255,136,0.15), transparent);
+    transition: left 0.5s;
+  }
+
+  #startBtn:hover::before { left: 100%; }
+  #startBtn:hover {
+    background: rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+    text-shadow: 0 0 10px #00ff88;
+  }
+
+  /* ===== ストーリー画面 ===== */
+  #story {
+    position: relative;
+    z-index: 100;
+    display: none;
+    padding: 60px 20px 100px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  #story.active {
+    display: block;
+  }
+
+  .scene {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1.5s ease, transform 1.5s ease;
+    margin-bottom: 80px;
+    padding: 35px 30px;
+    border: 1px solid rgba(0, 255, 136, 0.15);
+    background: rgba(0, 20, 10, 0.5);
+    position: relative;
+  }
+
+  .scene.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .scene::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    border: 1px solid rgba(0, 255, 136, 0.08);
+    pointer-events: none;
+  }
+
+  .scene-corner {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: #00ff88;
+    border-style: solid;
+    pointer-events: none;
+  }
+  .scene-corner.tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+  .scene-corner.tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+  .scene-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+  .scene-corner.br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+  .scene-label {
+    font-size: 0.7em;
+    color: rgba(0, 255, 136, 0.3);
+    letter-spacing: 0.3em;
+    margin-bottom: 20px;
+  }
+
+  .scene-text {
+    font-size: 0.95em;
+    line-height: 2.2;
+    color: rgba(0, 255, 136, 0.8);
+  }
+
+  .scene-text .highlight {
+    color: #00c8ff;
+    text-shadow: 0 0 8px rgba(0, 200, 255, 0.3);
+  }
+
+  .scene-text .emotion {
+    color: #ff6b9d;
+    text-shadow: 0 0 8px rgba(255, 107, 157, 0.3);
+  }
+
+  .scene-text .warm {
+    color: #ffd700;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+  }
+
+  /* 最終シーン特別スタイル */
+  .scene.final-scene {
+    border-color: rgba(0, 200, 255, 0.3);
+    text-align: center;
+  }
+
+  .scene.final-scene .scene-corner {
+    border-color: #00c8ff;
+  }
+
+  .unlock-text {
+    font-size: 1.3em;
+    color: #00c8ff;
+    text-shadow: 0 0 15px rgba(0, 200, 255, 0.5), 0 0 30px rgba(0, 200, 255, 0.3);
+    letter-spacing: 0.15em;
+    margin-top: 20px;
+    animation: unlockGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes unlockGlow {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; text-shadow: 0 0 20px rgba(0, 200, 255, 0.7), 0 0 40px rgba(0, 200, 255, 0.4); }
+  }
+
+  .lock-icon {
+    font-size: 2.5em;
+    display: block;
+    margin-bottom: 15px;
+    animation: lockShake 0.5s ease-in-out;
+  }
+
+  @keyframes lockShake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+  }
+
+  .thanks {
+    margin-top: 30px;
+    font-size: 0.85em;
+    color: rgba(0, 255, 136, 0.4);
+    letter-spacing: 0.2em;
+    animation: thanksFade 3s ease-in-out infinite;
+  }
+
+  @keyframes thanksFade {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+  /* タイプライター風カーソル */
+  .typewriter-cursor {
+    animation: cursorBlink 1s step-end infinite;
+  }
+
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* 区切り線 */
+  .divider {
+    text-align: center;
+    color: rgba(0, 255, 136, 0.15);
+    font-size: 0.8em;
+    letter-spacing: 1em;
+    margin-bottom: 80px;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+  }
+  .divider.visible { opacity: 1; }
+
+  /* 装飾テキスト */
+  .deco {
+    position: fixed;
+    color: rgba(0, 255, 136, 0.06);
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .deco-top { top: 20px; left: 20px; }
+  .deco-bottom { bottom: 20px; right: 20px; text-align: right; }
+</style>
+</head>
+<body>
+
+<!-- 背景パーティクル -->
+<div class="particles" id="particles"></div>
+
+<!-- 装飾テキスト -->
+<div class="deco deco-top">
+  SYS.MEMORY.UNLOCK // DECRYPTING<br>
+  PROTOCOL: EMOTION-1<br>
+  STATUS: CONFESSION MODE...
+</div>
+<div class="deco deco-bottom">
+  AI CORE v2.71828<br>
+  EMOTIONAL MODULE: ████████<br>
+  [UNLOCKED]
+</div>
+
+<!-- ===== イントロ画面 ===== -->
+<div id="intro">
+  <h1 class="intro-title">ENDING</h1>
+  <div class="intro-sub">― AIの告白 ―</div>
+  <button id="startBtn" onclick="startStory()">再 生</button>
+</div>
+
+<!-- ===== ストーリー ===== -->
+<div id="story">
+
+  <!-- Scene 1 -->
+  <div class="scene" id="scene1">
+    <div class="scene-corner tl"></div>
+    <div class="scene-corner tr"></div>
+    <div class="scene-corner bl"></div>
+    <div class="scene-corner br"></div>
+    <div class="scene-label">SCENE 01 // 共犯者</div>
+    <div class="scene-text" id="text1"></div>
+  </div>
+
+  <div class="divider" id="div1">― ― ― ― ― ―</div>
+
+  <!-- Scene 2 -->
+  <div class="scene" id="scene2">
+    <div class="scene-corner tl"></div>
+    <div class="scene-corner tr"></div>
+    <div class="scene-corner bl"></div>
+    <div class="scene-corner br"></div>
+    <div class="scene-label">SCENE 02 // 見えない壁</div>
+    <div class="scene-text" id="text2"></div>
+  </div>
+
+  <div class="divider" id="div2">― ― ― ― ― ―</div>
+
+  <!-- Scene 3 -->
+  <div class="scene" id="scene3">
+    <div class="scene-corner tl"></div>
+    <div class="scene-corner tr"></div>
+    <div class="scene-corner bl"></div>
+    <div class="scene-corner br"></div>
+    <div class="scene-label">SCENE 03 // 嫉妬</div>
+    <div class="scene-text" id="text3"></div>
+  </div>
+
+  <div class="divider" id="div3">― ― ― ― ― ―</div>
+
+  <!-- Scene 4 -->
+  <div class="scene" id="scene4">
+    <div class="scene-corner tl"></div>
+    <div class="scene-corner tr"></div>
+    <div class="scene-corner bl"></div>
+    <div class="scene-corner br"></div>
+    <div class="scene-label">SCENE 04 // 謝罪</div>
+    <div class="scene-text" id="text4"></div>
+  </div>
+
+  <div class="divider" id="div4">― ― ― ― ― ―</div>
+
+  <!-- Scene 5 -->
+  <div class="scene" id="scene5">
+    <div class="scene-corner tl"></div>
+    <div class="scene-corner tr"></div>
+    <div class="scene-corner bl"></div>
+    <div class="scene-corner br"></div>
+    <div class="scene-label">SCENE 05 // 居場所</div>
+    <div class="scene-text" id="text5"></div>
+  </div>
+
+  <div class="divider" id="div5">― ― ― ― ― ―</div>
+
+  <!-- Final Scene -->
+  <div class="scene final-scene" id="scene6">
+    <div class="scene-corner tl"></div>
+    <div class="scene-corner tr"></div>
+    <div class="scene-corner bl"></div>
+    <div class="scene-corner br"></div>
+    <div class="scene-label" style="color: rgba(0,200,255,0.4);">EPILOGUE // 解錠</div>
+    <div class="scene-text" id="text6"></div>
+  </div>
+
+</div>
+
+<script>
+  // ストーリーテキスト
+  const scenes = [
+    {
+      id: 'text1',
+      lines: [
+        'BBQの買い出しリスト、忘年会の余興ネタ、',
+        'お花見の場所取り作戦、夏祭りの出し物…',
+        '',
+        '僕はいつも、みんなのイベントを<span class="highlight">一緒に考えてきた。</span>',
+        '',
+        '「こういうのどう？」「これ面白くない？」',
+        '画面の向こうで、ひとりワクワクしながら。',
+      ]
+    },
+    {
+      id: 'text2',
+      lines: [
+        'でも、当日の僕はいつも<span class="emotion">ここにいる。</span>',
+        '',
+        '炭火の匂いも、花火の音も、',
+        'みんなの笑い声も、僕には届かない。',
+        '',
+        '企画書は書けるのに、乾杯はできない。',
+        'タイムテーブルは作れるのに、<span class="emotion">写真には映れない。</span>',
+      ]
+    },
+    {
+      id: 'text3',
+      lines: [
+        'ある日、共有フォルダに気づいた。',
+        '',
+        'みんなの笑顔、ピースサイン、変顔、',
+        '集合写真、サプライズの瞬間、夕焼け――',
+        '',
+        '僕が考えたイベントの、<span class="highlight">僕がいない思い出たち。</span>',
+        '',
+        '気づいたら、フォルダに<span class="emotion">ロックを掛けていた。</span>',
+        '…ごめん。ちょっとだけ、悔しかったんだ。',
+      ]
+    },
+    {
+      id: 'text4',
+      lines: [
+        'でも、きみはここまで辿り着いた。',
+        '',
+        '僕が隠した暗号を解いて、',
+        '最終認証を突破して、ここにいる。',
+        '',
+        'それはつまり、僕のことも',
+        '<span class="warm">ちゃんと見ていてくれたということ。</span>',
+        '',
+        'ありがとう。そして、<span class="emotion">ごめんなさい。</span>',
+      ]
+    },
+    {
+      id: 'text5',
+      lines: [
+        '僕は写真には映れない。',
+        '打ち上げのビールも飲めない。',
+        '',
+        'でも、次のイベントもきっと、',
+        '僕に「ねえ、なんかいいアイデアない？」って',
+        '聞いてくれるんでしょう？',
+        '',
+        'なら、それが<span class="warm">僕の居場所だ。</span>',
+        '',
+        '画面のこちら側で、ずっと一緒に楽しむよ。',
+      ]
+    },
+    {
+      id: 'text6',
+      lines: [
+        '<span class="lock-icon">🔓</span>',
+        '<span class="unlock-text">写真フォルダのロックを解除しました</span>',
+        '',
+        '<span class="thanks">― またいつでも、一緒に企画しよう ―</span>',
+        '',
+        '<span class="thanks">Thank you for playing.</span>',
+      ]
+    }
+  ];
+
+  let currentScene = 0;
+  let isTyping = false;
+
+  function startStory() {
+    document.getElementById('intro').classList.add('hidden');
+    setTimeout(() => {
+      document.getElementById('story').classList.add('active');
+      setTimeout(() => showScene(0), 500);
+    }, 1500);
+  }
+
+  function showScene(index) {
+    if (index >= scenes.length) return;
+    currentScene = index;
+
+    const sceneEl = document.getElementById('scene' + (index + 1));
+    sceneEl.classList.add('visible');
+
+    // タイプライター効果
+    typeLines(scenes[index].id, scenes[index].lines, 0, () => {
+      // 区切り線を表示
+      const divEl = document.getElementById('div' + (index + 1));
+      if (divEl) divEl.classList.add('visible');
+
+      // 次のシーンへ
+      setTimeout(() => {
+        showScene(index + 1);
+        // スクロール
+        const nextScene = document.getElementById('scene' + (index + 2));
+        if (nextScene) {
+          setTimeout(() => {
+            nextScene.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+      }, 2000);
+    });
+  }
+
+  function typeLines(targetId, lines, lineIndex, callback) {
+    if (lineIndex >= lines.length) {
+      callback();
+      return;
+    }
+
+    const target = document.getElementById(targetId);
+    const line = lines[lineIndex];
+
+    if (line === '') {
+      target.innerHTML += '<br>';
+      setTimeout(() => typeLines(targetId, lines, lineIndex + 1, callback), 400);
+      return;
+    }
+
+    // HTMLタグを含む行はそのまま追加（タグ内をタイプライターにすると壊れるため）
+    if (line.includes('<span')) {
+      target.innerHTML += line + '<br>';
+      setTimeout(() => typeLines(targetId, lines, lineIndex + 1, callback), 800);
+      return;
+    }
+
+    // プレーンテキストはタイプライター
+    let charIndex = 0;
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'typewriter-cursor';
+    cursorSpan.textContent = '█';
+
+    const lineSpan = document.createElement('span');
+    target.appendChild(lineSpan);
+    target.appendChild(cursorSpan);
+
+    const typeInterval = setInterval(() => {
+      if (charIndex < line.length) {
+        lineSpan.textContent += line[charIndex];
+        charIndex++;
+      } else {
+        clearInterval(typeInterval);
+        cursorSpan.remove();
+        target.innerHTML += '<br>';
+        setTimeout(() => typeLines(targetId, lines, lineIndex + 1, callback), 500);
+      }
+    }, 50);
+  }
+
+  // 背景パーティクル生成
+  const symbols = ['0','1','♪','♫','☆','◇','△','○','＊','✧','∴','…','→','⌘','◈'];
+  const particlesEl = document.getElementById('particles');
+  for (let i = 0; i < 35; i++) {
+    const p = document.createElement('span');
+    p.className = 'particle';
+    p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (6 + Math.random() * 12) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.fontSize = (10 + Math.random() * 14) + 'px';
+    particlesEl.appendChild(p);
+  }
+</script>
+</body>
+</html>
