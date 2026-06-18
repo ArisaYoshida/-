@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ヒント</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; color: #00ff88; font-family: 'Share Tech Mono', 'Courier New', monospace; min-height: 100vh; position: relative; padding-bottom: 60px; }
+body::before { content: ''; position: fixed; top:0; left:0; right:0; bottom:0; background: repeating-linear-gradient(0deg, rgba(0,255,136,0.03) 0px, rgba(0,255,136,0.03) 1px, transparent 1px, transparent 3px); pointer-events: none; z-index: 9999; animation: scanFlicker 0.1s infinite; }
+body::after { content: ''; position: fixed; top:0; left:0; right:0; bottom:0; background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%); pointer-events: none; z-index: 9998; }
+@keyframes scanFlicker { 0%{opacity:0.9} 50%{opacity:1} 100%{opacity:0.9} }
+.particles { position: fixed; top:0; left:0; right:0; bottom:0; z-index:0; overflow:hidden; pointer-events:none; }
+.particle { position:absolute; color: rgba(0,255,136,0.12); font-size:14px; animation: fall linear infinite; font-family: 'Share Tech Mono', monospace; pointer-events:none; }
+@keyframes fall { 0%{transform:translateY(-100vh) rotate(0); opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateY(100vh) rotate(360deg); opacity:0} }
+.container { position:relative; z-index:100; max-width:720px; margin:0 auto; padding:50px 20px 30px; }
+.title-wrapper { position:relative; text-align:center; margin-bottom:10px; }
+.title { font-size:2.6em; letter-spacing:0.2em; color:#00ff88; text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 40px #00cc66, 0 0 80px #00cc66; animation: glowPulse 2s ease-in-out infinite; position:relative; display:inline-block; }
+.title::before, .title::after { position:absolute; top:0; left:0; right:0; }
+.title.page1::before, .title.page1::after { content: 'ヒント'; }
+.title.page2::before, .title.page2::after { content: 'ヒント PAGE 2'; }
+.title::before { color:#ff0040; animation: glitch1 3s infinite; clip-path: inset(0 0 60% 0); }
+.title::after { color:#00c8ff; animation: glitch2 3s infinite; clip-path: inset(60% 0 0 0); }
+@keyframes glowPulse { 0%,100%{opacity:1} 50%{opacity:0.85} }
+@keyframes glitch1 { 0%,90%,100%{transform:translate(0)} 92%{transform:translate(-3px,1px)} 94%{transform:translate(3px,-1px)} 96%{transform:translate(-2px,2px)} 98%{transform:translate(2px,-2px)} }
+@keyframes glitch2 { 0%,88%,100%{transform:translate(0)} 90%{transform:translate(3px,-1px)} 93%{transform:translate(-3px,1px)} 95%{transform:translate(2px,2px)} 97%{transform:translate(-2px,-1px)} }
+.subtitle { text-align:center; font-size:0.85em; color:rgba(0,255,136,0.4); letter-spacing:0.5em; margin-bottom:30px; animation: blink 4s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
+.warning { text-align:center; font-size:0.8em; color:rgba(255,200,0,0.6); margin-bottom:40px; letter-spacing:0.15em; line-height:1.8; padding:12px; border:1px dashed rgba(255,200,0,0.3); background: rgba(40,30,0,0.3); }
+.puzzle-box { border:1px solid rgba(0,255,136,0.3); padding:25px 22px; position:relative; background:rgba(0,20,10,0.6); backdrop-filter: blur(4px); margin-bottom:30px; }
+.puzzle-box::before { content:''; position:absolute; top:-1px; left:-1px; right:-1px; bottom:-1px; border:1px solid rgba(0,255,136,0.1); pointer-events:none; }
+.corner { position:absolute; width:12px; height:12px; border-color:#00ff88; border-style:solid; pointer-events:none; }
+.corner.tl { top:-2px; left:-2px; border-width:2px 0 0 2px; }
+.corner.tr { top:-2px; right:-2px; border-width:2px 2px 0 0; }
+.corner.bl { bottom:-2px; left:-2px; border-width:0 0 2px 2px; }
+.corner.br { bottom:-2px; right:-2px; border-width:0 2px 2px 0; }
+.puzzle-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid rgba(0,255,136,0.15); }
+.puzzle-label { font-size:0.7em; color:rgba(0,255,136,0.4); letter-spacing:0.3em; }
+.puzzle-title { font-size:1.2em; color:#00ff88; letter-spacing:0.15em; text-shadow:0 0 8px rgba(0,255,136,0.4); }
+.hint-item { margin-bottom:12px; border:1px solid rgba(0,255,136,0.15); background:rgba(0,15,8,0.4); transition: all 0.3s; }
+.hint-item.revealed { border-color:rgba(0,200,255,0.3); background:rgba(0,20,30,0.5); }
+.hint-button { width:100%; padding:12px 16px; background:transparent; border:none; color:rgba(0,255,136,0.8); font-family:inherit; font-size:0.9em; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center; letter-spacing:0.1em; transition:all 0.3s; min-height:44px; }
+.hint-button:hover { background:rgba(0,255,136,0.08); color:#00ff88; text-shadow:0 0 8px rgba(0,255,136,0.5); }
+.hint-button:active { transform:scale(0.99); }
+.hint-button .level { color:#ffd700; letter-spacing:0.2em; font-size:0.85em; }
+.hint-button .action { color:rgba(0,200,255,0.6); font-size:0.85em; letter-spacing:0.15em; }
+.hint-item.revealed .hint-button { cursor:default; background:rgba(0,30,40,0.3); }
+.hint-item.revealed .hint-button:hover { background:rgba(0,30,40,0.3); color:rgba(0,255,136,0.5); text-shadow:none; }
+.hint-item.revealed .hint-button .action { color:rgba(0,200,255,0.4); }
+.hint-content { max-height:0; overflow:hidden; transition: max-height 0.6s ease, padding 0.3s ease; padding:0 16px; color:#00c8ff; font-size:0.9em; line-height:1.8; letter-spacing:0.05em; }
+.hint-item.revealed .hint-content { max-height:400px; padding:0 16px 14px; animation: hintReveal 0.6s ease-out; }
+@keyframes hintReveal { 0%{opacity:0; transform:translateY(-5px)} 100%{opacity:1; transform:translateY(0)} }
+.hint-content::before { content:'> '; color:rgba(0,200,255,0.5); }
+.gate-section { margin-top:40px; border:1px solid rgba(255,100,100,0.4); padding:30px 22px; position:relative; background:rgba(30,0,0,0.4); text-align:center; }
+.gate-section .corner { border-color:#ff6464; }
+.gate-title { font-size:1em; color:#ff6464; letter-spacing:0.25em; text-shadow:0 0 10px rgba(255,100,100,0.5); margin-bottom:8px; }
+.gate-subtitle { font-size:0.7em; color:rgba(255,100,100,0.5); letter-spacing:0.3em; margin-bottom:20px; }
+.lock-icon { font-size:2.5em; display:block; margin:10px 0 20px; color:#ff6464; text-shadow:0 0 15px rgba(255,100,100,0.5); animation: lockPulse 2s ease-in-out infinite; }
+@keyframes lockPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+.gate-prompt { font-size:0.85em; color:rgba(0,255,136,0.7); margin-bottom:8px; text-align:left; line-height:1.7; }
+.gate-instruction { font-size:0.78em; color:rgba(255,215,0,0.7); margin-bottom:20px; text-align:left; letter-spacing:0.08em; line-height:1.7; padding:8px 10px; border-left:2px solid rgba(255,215,0,0.4); background:rgba(40,30,0,0.3); }
+.pw-input-row { display:flex; gap:0; margin-bottom:18px; }
+.pw-prefix { background:rgba(255,100,100,0.1); border:1px solid rgba(255,100,100,0.3); border-right:none; padding:12px 14px; color:#ff6464; font-family:inherit; font-size:1em; display:flex; align-items:center; }
+#pwInput { flex:1; background:rgba(20,0,0,0.6); border:1px solid rgba(255,100,100,0.3); border-left:none; padding:12px 16px; color:#ff6464; font-family:inherit; font-size:1.3em; letter-spacing:0.5em; text-align:center; outline:none; caret-color:#ff6464; transition:all 0.3s; }
+#pwInput:focus { border-color:#ff6464; box-shadow:0 0 15px rgba(255,100,100,0.2); }
+#pwInput::placeholder { color:rgba(255,100,100,0.2); letter-spacing:0.5em; }
+#unlockBtn { width:100%; padding:14px; background:transparent; border:1px solid #ff6464; color:#ff6464; font-family:inherit; font-size:1em; letter-spacing:0.3em; cursor:pointer; position:relative; overflow:hidden; transition:all 0.3s; min-height:48px; }
+#unlockBtn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,100,100,0.15), transparent); transition:left 0.5s; }
+#unlockBtn:hover::before { left:100%; }
+#unlockBtn:hover { background:rgba(255,100,100,0.1); box-shadow:0 0 25px rgba(255,100,100,0.3); text-shadow:0 0 10px #ff6464; }
+#unlockBtn:active { transform:scale(0.98); }
+#gateResult { margin-top:16px; min-height:30px; font-size:0.9em; }
+.gate-error { color:#ff0040; text-shadow:0 0 10px #ff0040; animation: shakeIt 0.5s; }
+.gate-success { color:#00ff88; text-shadow:0 0 12px #00ff88; animation: successGlow 1s ease-in-out; }
+@keyframes shakeIt { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+@keyframes successGlow { 0%{opacity:0; transform:scale(0.8)} 100%{opacity:1; transform:scale(1)} }
+.gate-section.unlocked { border-color:rgba(0,255,136,0.3); background:rgba(0,20,10,0.4); }
+.gate-section.unlocked .corner { border-color:#00ff88; }
+.gate-section.unlocked .lock-icon { color:#00ff88; text-shadow:0 0 15px rgba(0,255,136,0.5); }
+.gate-section.unlocked .gate-title { color:#00ff88; text-shadow:0 0 10px rgba(0,255,136,0.5); }
+.page-divider { text-align:center; margin:50px 0 30px; color:rgba(0,200,255,0.4); letter-spacing:0.5em; font-size:0.85em; position:relative; }
+.page-divider::before, .page-divider::after { content:'═══════════════'; color:rgba(0,200,255,0.15); margin:0 10px; letter-spacing:-0.1em; }
+#page2 { display:none; animation: page2In 1s ease-out; }
+#page2.visible { display:block; }
+@keyframes page2In { 0%{opacity:0; transform:translateY(20px)} 100%{opacity:1; transform:translateY(0)} }
+.flash-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:#00ff88; z-index:10000; opacity:0; pointer-events:none; animation: flashAnim 0.6s ease-out forwards; }
+@keyframes flashAnim { 0%{opacity:0.6} 100%{opacity:0} }
+.deco { position:fixed; color:rgba(0,255,136,0.06); font-size:11px; white-space:nowrap; pointer-events:none; z-index:1; line-height:1.6; }
+.deco-top { top:15px; left:15px; }
+.deco-bottom { bottom:15px; right:15px; text-align:right; }
+@media (max-width:480px) {
+  .container { padding:30px 12px 20px; }
+  .title { font-size:1.8em; letter-spacing:0.15em; }
+  .subtitle { font-size:0.7em; letter-spacing:0.3em; margin-bottom:20px; }
+  .warning { font-size:0.7em; letter-spacing:0.08em; margin-bottom:25px; }
+  .puzzle-box { padding:18px 14px; margin-bottom:20px; }
+  .puzzle-title { font-size:1em; letter-spacing:0.1em; }
+  .puzzle-label { font-size:0.6em; }
+  .hint-button { font-size:0.78em; padding:10px 12px; min-height:44px; }
+  .hint-button .level { font-size:0.75em; }
+  .hint-button .action { font-size:0.7em; }
+  .hint-content { font-size:0.82em; line-height:1.7; }
+  .gate-section { padding:22px 16px; }
+  .gate-title { font-size:0.9em; letter-spacing:0.18em; }
+  .gate-subtitle { font-size:0.62em; letter-spacing:0.2em; }
+  .gate-prompt { font-size:0.78em; }
+  .gate-instruction { font-size:0.72em; }
+  #pwInput { font-size:16px; letter-spacing:0.4em; padding:10px 12px; }
+  .pw-prefix { padding:10px 10px; font-size:0.9em; }
+  #unlockBtn { font-size:0.9em; padding:12px; letter-spacing:0.2em; }
+  .page-divider { font-size:0.7em; letter-spacing:0.3em; }
+  .page-divider::before, .page-divider::after { content:'═══════'; }
+  .deco { display:none; }
+}
+@media (max-width:360px) {
+  .title { font-size:1.4em; }
+  .puzzle-box { padding:15px 10px; }
+  .hint-button { font-size:0.72em; }
+}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="deco deco-top">
+  SYS.HINT.ARCHIVE // LOADED<br>
+  PROTOCOL: ASSIST-3<br>
+  STATUS: STANDBY...
+</div>
+<div class="deco deco-bottom">
+  HINT MODULE v2.0<br>
+  ENTRIES: 13 + 17<br>
+  [DUAL PAGE]
+</div>
+
+<div class="container">
+
+  <div class="title-wrapper">
+    <h1 class="title page1">ヒント</h1>
+  </div>
+  <div class="subtitle">― HINT ARCHIVE ―</div>
+
+  <div class="warning">
+    &#9888; ヒントは段階的に開示されます<br>
+    必要なときだけタップしてください
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 01</span>
+      <span class="puzzle-title">謎&#9312;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">4色の三角形はなにを表しているでしょうか。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">どこかに同じ色・形のものはありませんか。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">Bフェスタのポスターを良く確認してください。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 02</span>
+      <span class="puzzle-title">謎&#9313;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">あいうえお表の上と横にあるイラストは何を表しているでしょうか。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">どこかに同じ色・形のものはありませんか。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">投稿画面のイラストを良く確認してください。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 03</span>
+      <span class="puzzle-title">謎&#9314;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">右下のイラストはなにを表しているでしょうか。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">動物禁止とはどういう意味でしょうか。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">文章をじっくり観察してください。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 04</span>
+      <span class="puzzle-title">謎&#9315;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">「き&rarr;&darr;う」を参考にしましょう。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">&rarr;は移動する方向を示しています。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">&#9313;の問題を参考にしましょう。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 05</span>
+      <span class="puzzle-title">文章</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">Bフェスタのポスターを良く確認してください。</div>
+    </div>
+  </div>
+
+  <!-- ===== PASSWORD GATE ===== -->
+  <div class="gate-section" id="gateSection">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="gate-title">次のヒント解錠</div>
+    <div class="gate-subtitle">― PAGE 2 LOCKED ―</div>
+    <div class="lock-icon">&#128274;</div>
+    <div class="gate-prompt">&gt; 暗証番号を入力してください</div>
+    <div class="gate-instruction">
+      PW: バンドー化学労働組合の&#9315;を入れてください
+    </div>
+    <div class="pw-input-row">
+      <span class="pw-prefix">&gt;_</span>
+      <input type="tel" id="pwInput" maxlength="4" placeholder="0000" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+    </div>
+    <button id="unlockBtn" onclick="unlock()">解 錠</button>
+    <div id="gateResult"></div>
+  </div>
+
+  <!-- ===== PAGE 2 ===== -->
+  <div id="page2">
+
+    <div class="page-divider">PAGE 2</div>
+
+    <div class="title-wrapper" style="text-align:center;">
+      <h1 class="title page2">ヒント PAGE 2</h1>
+    </div>
+    <div class="subtitle">― ADVANCED HINTS ―</div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 01</span>
+      <span class="puzzle-title">謎&#9312;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">問題の裏面の「組合活動の一年間」の「9月」をよく確認しよう</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">各選挙区の評議員の人数をあてはめて計算したあと、答えの数字の読み方を考えよう</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">例: 96&rarr;くろ&rarr;黒、33&rarr;みみ&rarr;耳</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 02</span>
+      <span class="puzzle-title">謎&#9313;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">問題の裏面の「組合活動の一年間」の「10月〜1月」をよく確認しよう</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">それぞれの記号を見ながらクロスワードパズルを完成させよう</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">クロスワードに入れる言葉は、「支部」を取ったひらがなで入れよう（例: 本社支部&rarr;ほんしゃ）</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 03</span>
+      <span class="puzzle-title">謎&#9314;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">問題の裏面の「組合活動の一年間」の「2月」をよく確認しよう</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">「賃金」「一時金」「諸要望」のマスを塗り潰そう</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">塗りつぶしていない白いところをよく見よう。答えはカタカナ4文字。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 04</span>
+      <span class="puzzle-title">謎&#9315;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">問題の裏面の右上をよく確認しよう</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">答えは5文字。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">&#8544;と&#8545;の言葉は漢字に直すと二文字で表せます。一つずつ丁寧に考えてみよう。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 05</span>
+      <span class="puzzle-title">謎&#9316;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">問題の裏面の「BANDOゆにおん新聞」から金額を読み取ろう。上から読んで次の指示に従おう。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">出てきた指示は「こぶしの先をよめ」。近くに拳はないだろうか。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">拳の先を読むときはその列を全て読もう。あとは出てきた指示に従って。答えはひらがな6文字。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">PUZZLE 06</span>
+      <span class="puzzle-title">謎&#9317;</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">この問題だけは紙面にありません。Yahooファイナンス等で調べてみよう。</div>
+    </div>
+  </div>
+
+  <div class="puzzle-box">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="puzzle-header">
+      <span class="puzzle-label">FINAL PUZZLE</span>
+      <span class="puzzle-title">最後の謎</span>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;</span> HINT 01</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">まずは「組合」と「会社」のロゴマークを探そう。1枚目も使用します。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;</span> HINT 02</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">「委員長」と「社長」の手の上にロゴマークができるように折り紙しよう。</div>
+    </div>
+    <div class="hint-item" onclick="reveal(this)">
+      <button class="hint-button">
+        <span><span class="level">&#9733;&#9733;&#9733;</span> HINT 03</span>
+        <span class="action">[+] TAP TO REVEAL</span>
+      </button>
+      <div class="hint-content">1枚目は縦向きで観音開きになるように折ろう。2枚目は右下の角を折って、そのあと底辺が真ん中に来るように折ってみると、、、</div>
+    </div>
+  </div>
+
+  </div>
+
+</div>
+
+<script>
+const CORRECT_PW = "1946";
+function reveal(item) {
+  if (!item.classList.contains('revealed')) {
+    item.classList.add('revealed');
+    const action = item.querySelector('.action');
+    if (action) action.textContent = '[OK] REVEALED';
+  }
+}
+function unlock() {
+  const input = document.getElementById('pwInput');
+  const result = document.getElementById('gateResult');
+  const value = input.value.trim();
+  if (value === '') {
+    result.innerHTML = '<span class="gate-error">&#9888; 暗証番号を入力してください</span>';
+    return;
+  }
+  if (value === CORRECT_PW) {
+    const flash = document.createElement('div');
+    flash.className = 'flash-overlay';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 700);
+    result.innerHTML = '<span class="gate-success">&#10004; 解錠成功 ― UNLOCKED</span>';
+    document.getElementById('gateSection').classList.add('unlocked');
+    document.querySelector('.lock-icon').innerHTML = '&#128275;';
+    document.querySelector('.gate-title').textContent = '解錠済み';
+    document.querySelector('.gate-subtitle').textContent = '― PAGE 2 UNLOCKED ―';
+    input.disabled = true;
+    document.getElementById('unlockBtn').disabled = true;
+    document.getElementById('unlockBtn').style.opacity = '0.3';
+    setTimeout(() => {
+      const page2 = document.getElementById('page2');
+      page2.classList.add('visible');
+      setTimeout(() => { page2.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200);
+    }, 800);
+  } else {
+    result.innerHTML = '<span class="gate-error">&#10006; 暗証番号が違います</span>';
+    input.value = '';
+    input.style.borderColor = '#ff0040';
+    input.style.boxShadow = '0 0 15px rgba(255,0,64,0.3)';
+    setTimeout(() => {
+      input.style.borderColor = 'rgba(255, 100, 100, 0.3)';
+      input.style.boxShadow = 'none';
+    }, 600);
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') unlock(); });
+document.getElementById('pwInput').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
+const symbols = ['0','1','?','!','#','$','%','&','*','+','-','=','>','<'];
+const particlesEl = document.getElementById('particles');
+for (let i = 0; i < 35; i++) {
+  const p = document.createElement('span');
+  p.className = 'particle';
+  p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+  p.style.left = Math.random() * 100 + '%';
+  p.style.animationDuration = (6 + Math.random() * 12) + 's';
+  p.style.animationDelay = (Math.random() * 10) + 's';
+  p.style.fontSize = (10 + Math.random() * 14) + 'px';
+  particlesEl.appendChild(p);
+}
+</script>
+</body>
+</html>
